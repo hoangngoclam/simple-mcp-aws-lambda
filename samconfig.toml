@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "test-mcp"
+resolve_s3 = true
+s3_prefix = "test-mcp"
+region = "ap-southeast-1"
+profile = "lamdalat"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []

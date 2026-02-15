@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: FastMCP Server running on AWS Lambda with Web Adapter and API Gateway
+
+Resources:
+  # HTTP API Gateway
+  McpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Description: HTTP API Gateway for FastMCP
+
+  # Python 3.13 Lambda Function
+  McpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: run.sh  # Points to our startup script
+      Runtime: python3.13
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Timeout: 30
+      Layers:
+        # Official AWS Lambda Web Adapter Layer (x86_64)
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerX86:25
+      Environment:
+        Variables:
+          # Tells Lambda to use the Web Adapter extension
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          # The port the Web Adapter will listen on and forward to FastMCP
+          PORT: 8080
+      Events:
+        McpEndpoint:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref McpApi
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  McpApiUrl:
+    Description: "Your FastMCP API Gateway Endpoint URL"
+    Value: !Sub "https://${McpApi}.execute-api.${AWS::Region}.amazonaws.com/"
