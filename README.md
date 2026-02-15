@@ -16,13 +16,13 @@ A FastMCP server deployed on AWS Lambda that provides weather information. This 
 
 ```bash
 cd src
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 ### 2. Run the Server
 
 ```bash
-python main.py
+uv python main.py
 ```
 
 The server will start on `http://0.0.0.0:8080`
@@ -32,9 +32,20 @@ The server will start on `http://0.0.0.0:8080`
 You can test the server locally by sending HTTP requests:
 
 ```bash
-curl -X POST http://localhost:8080/tools/call \
+curl -X POST http://localhost:8080/mcp \
   -H "Content-Type: application/json" \
-  -d '{"name": "get_weather", "arguments": {"city": "San Francisco"}}'
+  -H "Accept: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "get_weather",
+      "arguments": {
+        "city": "Dalat"
+      }
+    }
+  }'
 ```
 
 ## 🔨 Deploying with SAM CLI
@@ -92,9 +103,20 @@ Copy this URL - you'll need it for Claude Desktop configuration.
 ### 4. Test Your Deployed API
 
 ```bash
-curl -X POST https://YOUR-API-URL/tools/call \
+curl -X POST https://abc123xyz.execute-api.ap-southeast-1.amazonaws.com/mcp \
   -H "Content-Type: application/json" \
-  -d '{"name": "get_weather", "arguments": {"city": "Paris"}}'
+  -H "Accept: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+      "name": "get_weather",
+      "arguments": {
+        "city": "Dalat"
+      }
+    }
+  }'
 ```
 
 ## 🤖 Importing into Claude Desktop
